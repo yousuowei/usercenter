@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>yousuowei-usercenter</artifactId>
+		<groupId>org.yousuowei</groupId>
+		<version>1.0.0</version>
+	</parent>
+
+	<artifactId>yousuowei-usercenter-web</artifactId>
+	<packaging>war</packaging>
+	<name>yousuowei-usercenter-web Maven Webapp</name>
+	<url>http://maven.apache.org</url>
+
+	<dependencies>
+		<!-- 自有依赖 -->
+		<dependency>
+			<groupId>org.yousuowei</groupId>
+			<artifactId>yousuowei-usercenter-ifc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.yousuowei</groupId>
+			<artifactId>yousuowei-base-web</artifactId>
+			<version>1.0.0</version>
+			<!-- 引用base-web的jar包 -->
+			<classifier>web</classifier>
+		</dependency>
+
+		<!-- 开源依赖 -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.2.1</version>
+		</dependency>
+		<!-- spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>4.0.2.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>3.2.3.RELEASE</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>3.2.3.RELEASE</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<!-- spring -->
+	</dependencies>
+
+	<build>
+		<finalName>yousuowei-usercenter-web</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<configuration>
+					<path>/usercenter</path>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-web</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<overwrite>true</overwrite>
+							<encoding>UTF-8</encoding>
+							<outputDirectory>src/main/webapp/
+							</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${path.base.web}/src/main/webapp</directory>
+									<includes>
+										<include>base/**</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-resources</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<overwrite>false</overwrite>
+							<encoding>UTF-8</encoding>
+							<outputDirectory>src/main/
+							</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${path.base.web}/src/main</directory>
+									<includes>
+										<include>webapp/WEB-INF/**</include>
+										<include>resources/**</include>
+										<include>webapp/page/**</include>
+										<include>webapp/css/**</include>
+										<include>webapp/img/**</include>
+										<include>webapp/js/**</include>
+										<include>webapp/page/task-list.jsp</include>
+										<include>webapp/page/task-read.jsp</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

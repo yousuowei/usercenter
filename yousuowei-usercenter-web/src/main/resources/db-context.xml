@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context.xsd
+http://www.springframework.org/schema/mvc
+http://www.springframework.org/schema/mvc/spring-mvc.xsd
+http://www.springframework.org/schema/tx
+http://www.springframework.org/schema/tx/spring-tx.xsd
+http://www.springframework.org/schema/aop
+http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<!-- 设置获取属性配置文件bean来获取配置文件 -->
+	<context:property-placeholder location="classpath:db.properties"
+		ignore-unresolvable="true" />
+
+	<!-- 启动 @AspectJ 支持 -->
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+
+	<!-- 对web包中的所有类进行扫描，以完成Bean创建和自动依赖注入的功能 -->
+	<context:component-scan base-package="org.yousuowei.*.imp.dao" />
+	<context:component-scan base-package="org.yousuowei.*.imp.service" />
+	<context:component-scan base-package="org.yousuowei.*.imp.entity" />
+	<context:component-scan base-package="org.yousuowei.*.aop" />
+
+	<!-- 配置数据源 -->
+	<bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="${jdbc.driver}" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+
+		<!-- 检查数据库连接池中空闲连接的间隔时间，单位是分，默认值：240，如果要取消则设置为0 -->
+		<property name="idleConnectionTestPeriodInMinutes" value="60" />
+		<!-- 连接池中未使用的链接最大存活时间，单位是分，默认值：60，如果要永远存活设置为0 -->
+		<property name="idleMaxAgeInMinutes" value="240" />
+		<!-- 每个分区最大的连接数 -->
+		<property name="maxConnectionsPerPartition" value="30" />
+		<!-- 每个分区最小的连接数 -->
+		<property name="minConnectionsPerPartition" value="10" />
+		<!-- 分区数，默认值2，最小1，推荐3-4，视应用而定 -->
+		<property name="partitionCount" value="3" />
+		<!-- 每次去拿数据库连接的时候一次性要拿几个，默认值：2 -->
+		<property name="acquireIncrement" value="5" />
+		<!-- 缓存prepared statements的大小，默认值：0 -->
+		<property name="statementsCacheSize" value="100" />
+		<!-- 每个分区释放链接助理进程的数量，默认值：3，除非你的一个数据库连接的时间内做了很多工作，不然过多的助理进程会影响你的性能 -->
+		<property name="releaseHelperThreads" value="3" />
+	</bean>
+
+	<!-- Hibernate -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan" value="org.yousuowei.*.imp.entity" />
+		<property name="hibernateProperties">
+			<props>
+				<!--如果用的是Hibernate3 <prop key="hibernate.connection.provider_class">com.jolbox.bonecp.provider.BoneCPConnectionProvider</prop> -->
+				<!--如果用的是Hibernate4 -->
+				<prop key="hibernate.service.jdbc.connections.spi.provider_class">com.jolbox.bonecp.provider.BoneCPConnectionProvider
+				</prop>
+
+				<!-- 指定数据库方言 -->
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<!-- <prop key="hibernate.dialect"> org.hibernate.dialect.MySQLInnoDBDialect</prop> -->
+				<!-- 是否根据需要每次自动创建数据库 -->
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<!-- 显示Hibernate持久化操作所生成的SQL -->
+				<prop key="hibernate.show_sql">false</prop>
+				<!-- 将SQL脚本进行格式化后再输出 -->
+				<prop key="hibernate.format_sql">false</prop>
+				<!-- 指定事务管理 jta,thread,SpringSessionContext -->
+				<prop key="hibernate.current_session_context_class">org.springframework.orm.hibernate4.SpringSessionContext
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- 配置使用注解的方式来使用事务 <tx:annotation-driven transaction-manager="transactionManager" 
+		/> -->
+
+	<!-- transactionManager -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+
+	<!-- 配置那些类的方法进行事务管理,需要aopalliance-1.0.jar和aspectjweaver.jar，当前com.neusoft.leehom.service包中的子包， 
+		类中所有方法需要，还需要参考tx:advice的设置 -->
+
+	<!-- 这是事务通知操作，使用的事务管理器引用自 transactionManager -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="*" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice>
+
+	<!-- 需要引入aop的命名空间 -->
+	<aop:config>
+		<!-- 切入点指明了在执行Service的所有方法时产生事务拦截操作 -->
+		<aop:pointcut id="productServiceMethods"
+			expression="execution(* org.yousuowei..imp.service.*.*(..))" />
+		<!-- 定义了将采用何种拦截操作，这里引用到 txAdvice -->
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="productServiceMethods" />
+	</aop:config>
+
+
+
+	<!-- Jpa -->
+	<!-- <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"> 
+		<property name="dataSource" ref="dataSource" /> <property name="persistenceUnitName" 
+		value="jpaTest" /> <property name="packagesToScan" value="org.yousuowei.*.imp.entity" 
+		/> <property name="jpaVendorAdapter"> <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"> 
+		<property name="database" value="HSQL" /> </bean> </property> </bean> <bean 
+		id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> -->
+	<!-- Jpa -->
+</beans>
