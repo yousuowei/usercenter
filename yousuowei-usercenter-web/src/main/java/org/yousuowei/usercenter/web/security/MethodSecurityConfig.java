@@ -1,4 +1,4 @@
-package org.yousuowei.web.usercenter.security;
+package org.yousuowei.usercenter.web.security;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;

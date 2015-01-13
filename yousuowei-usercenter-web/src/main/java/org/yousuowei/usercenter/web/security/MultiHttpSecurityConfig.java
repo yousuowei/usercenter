@@ -1,4 +1,4 @@
-package org.yousuowei.web.usercenter.security;
+package org.yousuowei.usercenter.web.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

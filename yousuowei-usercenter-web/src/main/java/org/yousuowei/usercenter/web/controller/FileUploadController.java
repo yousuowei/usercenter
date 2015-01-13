@@ -1,4 +1,4 @@
-package org.yousuowei.web.usercenter.controller;
+package org.yousuowei.usercenter.web.controller;
 //package you.suo.wei.pm.web.controller;
 //
 //import java.io.File;

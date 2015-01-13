@@ -1,4 +1,4 @@
-package org.yousuowei.web.usercenter.controller.admin;
+package org.yousuowei.usercenter.web.controller.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -10,7 +10,7 @@ import org.yousuowei.usercenter.ifc.UserIfc;
 import org.yousuowei.usercenter.ifc.info.UserInfo;
 
 @Controller
-@RequestMapping("/user")
+@RequestMapping("admin/usercenter")
 public class UserController extends BaseController<UserInfo> {
 
     @Autowired

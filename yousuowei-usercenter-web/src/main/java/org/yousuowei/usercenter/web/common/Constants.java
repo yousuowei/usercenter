@@ -1,4 +1,4 @@
-package org.yousuowei.web.usercenter.common;
+package org.yousuowei.usercenter.web.common;
 
 public class Constants {
     public final static String OPERATE_TYPE_ADD = "0";

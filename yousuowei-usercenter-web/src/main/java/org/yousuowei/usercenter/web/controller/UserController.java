@@ -1,4 +1,4 @@
-package org.yousuowei.web.usercenter.controller;
+package org.yousuowei.usercenter.web.controller;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.yousuowei.usercenter.ifc.UserIfc;
 import org.yousuowei.usercenter.ifc.info.UserInfo;
-import org.yousuowei.web.usercenter.common.Constants;
+import org.yousuowei.usercenter.web.common.Constants;
 
 @Controller
 @RequestMapping("/user")
